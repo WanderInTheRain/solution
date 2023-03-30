@@ -1,0 +1,39 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int knapsack(vector<int> w,vector<int> v,int C){
+    int n=w.size();
+    vector<vector<int>> dp(n+1,vector<int>(C+1,0));
+    for (int i=1;i<=n;i++){
+        for (int j=1;j<=C;j++){
+            if (j>=w[i-1])
+                dp[i][j]=max(dp[i-1][j],dp[i-1][j-w[i-1]]+v[i-1]);
+            else
+                dp[i][j]=dp[i-1][j];
+        }
+    }
+    return dp[n][C];
+}
+
+/*
+int knapsack(vector<int> w,vector<int> v,int C){
+    int n=w.size();
+    vector<int> dp(C+1,0);
+    for (int i=1;i<=n;i++){
+        for (int j=C;j>=0;j--){
+            dp[j]=max(dp[j],dp[j-w[i-1]]+v[i-1]);
+        }
+    }
+    return dp[C];
+}
+*/
+
+int main(){
+    vector<int> w = {2, 3, 4, 5};
+    vector<int> v = {3, 4, 5, 6};
+    int C = 8;
+    cout << knapsack(w, v, C) << endl;
+    return 0;
+}
