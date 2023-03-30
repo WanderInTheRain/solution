@@ -1,0 +1,76 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+const int N = 1005;
+const int INF = 0x3f3f3f3f;
+int n;
+int g[N][N];
+
+struct Node{
+    int lb; // 下界
+    int k; // 当前已经确定的边数
+    int curr; // 当前所在的点
+    int sum; // 当前已经确定的边的长度和
+    bool vis[N]; // 记录当前点是否已经确定过
+    bool operator< (const Node& t) const {
+        return lb > t.lb;
+    }
+}
+
+priority_queue<Node> heap;
+int res=INF
+
+int bound(Node node){
+    int res=node.sum;
+    for (int j = 1; j <= n; j++) {
+        if (!node.vis[j]) {
+            int minv = INF;
+            for (int k = 1; k <= n; k++)
+                if (!node.vis[k])
+                    minv = min(minv, g[j][k]);
+            res += minv;
+        }
+    }
+    return res;
+}
+
+void dfs(Node node){
+    if (node.k==n){
+        res=min(res,node.sum+g[node.curr][1]);
+        return;
+    }
+    for (int i=1;i<n;i++){
+        if (!node.vis[i]){
+            Node t=node;
+            t.vis[i]=true;
+            t.sum+=g[t.curr][i];
+            t.curr=i;
+            t.k++;
+            if (t.sum>=res) continue;
+            t.lb=bound(t);
+            heap.push(t);
+        }
+    }
+}
+
+int main(){
+    cin>>n;
+    for (int i=1;i<n;i++)
+        for (int j=1;j<n;j++)
+            cin>>g[i][j];
+    Node root;
+    root.lb=root.k=root.sum=0;
+    root.curr=1;
+    memset(root.vis, false, sizeof root.vis);
+    root.vis[1]=true;
+    dfs(root);
+    while (heap.size()){
+        auto t=heap.top();
+        heap.pop();
+        dfs(t);
+    }
+    cout<<res<<endl;
+}
